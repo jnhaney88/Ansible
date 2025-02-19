@@ -1,5 +1,11 @@
-- hosts: all
+---
+- name: Linux Reboot Demo
+  hosts: rhel7-base
+  gather_facts: no
+  remote_user: devops
   become: true
+ 
   tasks:
-  - name: Restart Servers
-    reboot:
+    - name: Reboot the machine (Wait for 5 min)
+      reboot:
+        reboot_timeout: 300
