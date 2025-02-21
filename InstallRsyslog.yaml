@@ -2,10 +2,6 @@
   hosts: all
   become: true
   tasks:
-  - name: Add rsyslog repo
-    apt_repository:
-      repo: ppa:adiscon/v8-devel
-      state: present
   - name: Update repositories cache and install rsyslog package
     apt:
       name: rsyslog
