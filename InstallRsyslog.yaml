@@ -3,7 +3,7 @@
   become: true
   tasks:
   - name: Add rsyslog repo
-  - apt_repository:
+    apt_repository:
       repo: ppa:adiscon/v8-devel
       state: present
 
