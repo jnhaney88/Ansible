@@ -1,8 +1,7 @@
 ---
-- name: Linux Reboot Demo
+- name: Linux Reboot
   hosts: all
   gather_facts: no
-  remote_user: jhaney
   become: true
  
   tasks:
