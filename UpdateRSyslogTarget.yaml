@@ -1,0 +1,18 @@
+- hosts: debian
+  become: true
+  tasks:
+  - name: Check if rsyslog entry already exists
+    lineinfile:
+      state: absent
+      path: /etc/rsyslog.conf
+      search_string: "192.168.100.100"
+    check_mode: true
+    changed_when: false # This just makes things look prettier in the logs
+    register: check
+
+  - name: Add USM line in rsyslog.conf if it does not exist
+    lineinfile:
+      state: present
+      path: /etc/rsyslog.conf
+      line: "*.* action(type="omfwd" target="192.168.100.100" port="514" protocol="udp" action.resumeRetryCount="100" queue.type="linkedList" queue.size="10000") # send (all) messages - Forward to the USM Anywhere Sensor >"
+    when: check.found == 0
