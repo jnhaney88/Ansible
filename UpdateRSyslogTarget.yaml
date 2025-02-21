@@ -14,5 +14,8 @@
     lineinfile:
       state: present
       path: /etc/rsyslog.conf
-      line: '*.* action(type="omfwd" target="192.168.100.100" port="514" protocol="udp" action.resumeRetryCount="100" queue.type="linkedList" queue.size="10000") # send (all) messages - Forward to the USM Anywhere Sensor >'
+      line: '#'
+      line: '### Send (all) messages - Forward to the USM Anywhere Sensor >'
+      line: '#'
+      line: '*.* action(type="omfwd" target="192.168.100.100" port="514" protocol="udp" action.resumeRetryCount="100" queue.type="linkedList" queue.size="10000")'
     when: check.found == 0
