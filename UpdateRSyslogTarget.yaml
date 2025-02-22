@@ -1,6 +1,17 @@
+- name: Install RSyslog and configure for LevelBlue
 - hosts: debian
   become: true
   tasks:
+
+  - name: Install Rsyslog
+    hosts: all
+    become: true
+    tasks:
+    - name: Update repositories cache and install rsyslog package
+      apt:
+        name: rsyslog
+        update_cache: yes
+
   - name: Check if rsyslog entry already exists
     lineinfile:
       state: absent
