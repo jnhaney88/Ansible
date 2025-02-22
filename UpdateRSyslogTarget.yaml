@@ -1,5 +1,5 @@
 - name: Install RSyslog and configure for LevelBlue
-- hosts: debian
+  hosts: debian
   become: true
   tasks:
 
