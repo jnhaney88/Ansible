@@ -3,6 +3,7 @@
   tasks:
   - name: Add pam_faillock to password-auth
     community.general.pamd:
+      name: system-auth
       service: password-auth
       type: "account"
       control: "required"
