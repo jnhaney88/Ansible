@@ -1,0 +1,23 @@
+--- 
+
+- hosts: all
+
+  become: yes
+
+  tasks:
+
+  - name: Add pam_faillock to password-auth
+
+    community.general.pamd:
+
+      service: password-auth
+
+      type: "account"
+
+      control: "required"
+
+      module_path: "pam_faillock.so"
+
+      module_args: "fail_delay=5 deny=3 unlock_time=30"
+
+
