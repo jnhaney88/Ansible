@@ -1,22 +1,15 @@
 ---
-- name: Configure pam_faillock on Ubuntu
+- name: Configure pam_faillock on Ubuntu 24.04
   hosts: all
   become: yes
   tasks:
-  
-    - name: Ensure the pam_faillock package is installed
-      apt:
-        name: libpam-faildelay
-        state: present
-      tags:
-        - pam
-        - pam_faillock
 
+    # Step 2: Configure pam_faillock for SSH authentication
     - name: Configure pam_faillock for SSH authentication
       lineinfile:
         path: /etc/pam.d/sshd
         regexp: '^#?auth required pam_faillock.so'
-        line: 'auth required pam_faillock.so preauth audit silent deny=3 unlock_time=900'
+        line: 'auth required pam_faillock.so preauth audit silent deny=5 unlock_time=600'
         state: present
       notify:
         - Restart SSH service
@@ -24,6 +17,18 @@
         - pam
         - ssh
 
+    # Step 3: Configure pam_faillock for login authentication
+    - name: Configure pam_faillock for login authentication
+      lineinfile:
+        path: /etc/pam.d/common-auth
+        regexp: '^#?auth required pam_faillock.so'
+        line: 'auth required pam_faillock.so authfail audit deny=5 unlock_time=600'
+        state: present
+      tags:
+        - pam
+        - auth
+
+    # Step 4: Configure pam_faillock for account management
     - name: Configure pam_faillock for account management
       lineinfile:
         path: /etc/pam.d/common-account
@@ -32,17 +37,21 @@
         state: present
       tags:
         - pam
+        - account
 
-    - name: Ensure faillock is cleared after each successful login
+    # Step 5: Configure pam_faillock for session management (optional, but useful)
+    - name: Configure pam_faillock for session management
       lineinfile:
-        path: /etc/pam.d/common-auth
-        regexp: '^#?auth required pam_faillock.so'
-        line: 'auth required pam_faillock.so authfail audit deny=3 unlock_time=900'
+        path: /etc/pam.d/common-session
+        regexp: '^#?session required pam_faillock.so'
+        line: 'session required pam_faillock.so'
         state: present
       tags:
         - pam
+        - session
 
   handlers:
+    # Restart SSH service to apply changes
     - name: Restart SSH service
       service:
         name: ssh
