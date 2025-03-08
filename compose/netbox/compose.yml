@@ -1,0 +1,34 @@
+---
+services:
+  netbox:
+    image: lscr.io/linuxserver/netbox:latest
+    container_name: netbox
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - SUPERUSER_EMAIL=jnhaney@outlook.com
+      - SUPERUSER_PASSWORD=Netbox@19335
+      - ALLOWED_HOST=
+      - DB_NAME=netbox
+      - DB_USER=dbadmin
+      - DB_PASSWORD=Netbox@19335
+      - DB_HOST=
+      - DB_PORT=
+      - REDIS_HOST=
+      - REDIS_PORT=
+      - REDIS_PASSWORD=
+      - REDIS_DB_TASK=
+      - REDIS_DB_CACHE=
+      - BASE_PATH= #optional
+      - REMOTE_AUTH_ENABLED= #optional
+      - REMOTE_AUTH_BACKEND= #optional
+      - REMOTE_AUTH_HEADER= #optional
+      - REMOTE_AUTH_AUTO_CREATE_USER= #optional
+      - REMOTE_AUTH_DEFAULT_GROUPS= #optional
+      - REMOTE_AUTH_DEFAULT_PERMISSIONS= #optional
+    volumes:
+      - /path/to/netbox/config:/config
+    ports:
+      - 8000:8000
+    restart: unless-stopped

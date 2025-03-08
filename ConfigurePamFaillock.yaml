@@ -1,0 +1,13 @@
+- name: Configure PAM faillock lockout policy
+
+  community.general.pamd:
+
+    service: system-auth
+
+    type: auth
+
+    module_arguments:
+
+      - pam_faillock.so preauth silent audit deny=3 unlock_time=900 [1, 2, 5]
+
+    state: present
