@@ -1,7 +1,49 @@
-- hosts: all
-  become: true
+---
+- name: Configure pam_faillock on Ubuntu
+  hosts: all
+  become: yes
   tasks:
-  - name: Update and upgrade apt packages
-    apt:
-      upgrade: yes
-      update_cache: yes
+  
+    - name: Ensure the pam_faillock package is installed
+      apt:
+        name: libpam-faildelay
+        state: present
+      tags:
+        - pam
+        - pam_faillock
+
+    - name: Configure pam_faillock for SSH authentication
+      lineinfile:
+        path: /etc/pam.d/sshd
+        regexp: '^#?auth required pam_faillock.so'
+        line: 'auth required pam_faillock.so preauth audit silent deny=3 unlock_time=900'
+        state: present
+      notify:
+        - Restart SSH service
+      tags:
+        - pam
+        - ssh
+
+    - name: Configure pam_faillock for account management
+      lineinfile:
+        path: /etc/pam.d/common-account
+        regexp: '^#?account required pam_faillock.so'
+        line: 'account required pam_faillock.so'
+        state: present
+      tags:
+        - pam
+
+    - name: Ensure faillock is cleared after each successful login
+      lineinfile:
+        path: /etc/pam.d/common-auth
+        regexp: '^#?auth required pam_faillock.so'
+        line: 'auth required pam_faillock.so authfail audit deny=3 unlock_time=900'
+        state: present
+      tags:
+        - pam
+
+  handlers:
+    - name: Restart SSH service
+      service:
+        name: ssh
+        state: restarted
