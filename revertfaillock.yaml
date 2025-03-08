@@ -1,0 +1,53 @@
+---
+- name: Revert pam_faillock configuration on Ubuntu 24.04
+  hosts: all
+  become: yes
+  tasks:
+    # Step 1: Remove pam_faillock configuration from SSH authentication
+    - name: Remove pam_faillock configuration from SSH authentication
+      lineinfile:
+        path: /etc/pam.d/sshd
+        regexp: '^auth required pam_faillock.so.*'
+        state: absent
+      notify:
+        - Restart SSH service
+      tags:
+        - pam
+        - ssh
+
+    # Step 2: Remove pam_faillock configuration from login authentication
+    - name: Remove pam_faillock configuration from login authentication
+      lineinfile:
+        path: /etc/pam.d/common-auth
+        regexp: '^auth required pam_faillock.so.*'
+        state: absent
+      tags:
+        - pam
+        - auth
+
+    # Step 3: Remove pam_faillock configuration from account management
+    - name: Remove pam_faillock configuration from account management
+      lineinfile:
+        path: /etc/pam.d/common-account
+        regexp: '^account required pam_faillock.so.*'
+        state: absent
+      tags:
+        - pam
+        - account
+
+    # Step 4: Remove pam_faillock configuration from session management (optional)
+    - name: Remove pam_faillock configuration from session management
+      lineinfile:
+        path: /etc/pam.d/common-session
+        regexp: '^session required pam_faillock.so.*'
+        state: absent
+      tags:
+        - pam
+        - session
+
+  handlers:
+    # Restart SSH service to apply changes
+    - name: Restart SSH service
+      service:
+        name: ssh
+        state: restarted
